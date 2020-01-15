@@ -42,6 +42,7 @@ declare namespace JsonToAst {
         type: 'Identifier';
         value: string;
         raw: string;
+        loc: AstLocation;
     }
 
     export type AstJsonEntity = AstObject | AstArray | AstLiteral;

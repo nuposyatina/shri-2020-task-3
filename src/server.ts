@@ -23,7 +23,7 @@ let conf: ExampleConfiguration | undefined = undefined;
 conn.onInitialize((params: InitializeParams) => {
     return {
         capabilities: {
-            textDocumentSync: 'always'
+            textDocumentSync: docs.syncKind
         }
     };
 });
