@@ -19,6 +19,7 @@ import { makeLint, LinterProblem } from './linter';
 let conn = createConnection(ProposedFeatures.all);
 let docs = new TextDocuments();
 let conf: ExampleConfiguration | undefined = undefined;
+conn.console.log('hello')
 
 conn.onInitialize((params: InitializeParams) => {
     return {
@@ -63,7 +64,7 @@ function GetMessage(key: RuleKeys): string {
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
     const source = basename(textDocument.uri);
-    const json = textDocument.uri;
+    const json = textDocument.getText();
 
     const validateObject = (
         obj: jsonToAst.AstObject

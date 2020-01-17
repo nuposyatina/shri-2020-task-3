@@ -39,7 +39,10 @@ const createLanguageClient = (context: vscode.ExtensionContext): LanguageClient 
         documentSelector: [
             { scheme: 'file', language: 'json' }
         ],
-        synchronize: { configurationSection: 'example' }
+        synchronize: { 
+            configurationSection: 'example',
+            fileEvents: vscode.workspace.createFileSystemWatcher('**/package.json')
+        }
     };
 
     client = new LanguageClient('languageServerExample', 'Language Server Example', serverOptions, clientOptions);
@@ -126,15 +129,14 @@ export function activate(context: vscode.ExtensionContext) {
     console.info('Congratulations, your extension is now active!');
 
     client = createLanguageClient(context);
-
-    context.subscriptions.push(new SettingMonitor(client, 'example.enable').start());
-
+    // const monitoring = new SettingMonitor(client, 'example.enable').start();
+    const disposable = client.start();
     const eventChange: vscode.Disposable = vscode.workspace
         .onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => updateContent(e.document, context));
 
     const previewCommand = vscode.commands.registerCommand('example.showPreviewToSide', () => openPreview(context));
 
-    context.subscriptions.push(previewCommand, eventChange);
+    context.subscriptions.push(previewCommand, eventChange, disposable);
 }
 
 export function deactivate() {
