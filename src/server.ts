@@ -19,7 +19,6 @@ import { makeLint, LinterProblem } from './linter';
 let conn = createConnection(ProposedFeatures.all);
 let docs = new TextDocuments();
 let conf: ExampleConfiguration | undefined = undefined;
-conn.console.log('hello')
 
 conn.onInitialize((params: InitializeParams) => {
     return {
@@ -120,9 +119,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
         []
     );
 
-    if (diagnostics.length) {
-        conn.sendDiagnostics({ uri: textDocument.uri, diagnostics });
-    }
+    conn.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
 
 async function validateAll() {
@@ -135,9 +132,15 @@ docs.onDidChangeContent(change => {
     validateTextDocument(change.document);
 });
 
+docs.onDidClose((e) => {
+    conn.sendDiagnostics({ uri: e.document.uri, diagnostics: [] })
+});
+
 conn.onDidChangeConfiguration(({ settings }: DidChangeConfigurationParams) => {
     conf = settings.example;
-    validateAll();
+    if (conf && conf.enable) {
+        validateAll();
+    }
 });
 
 docs.listen(conn);

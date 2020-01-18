@@ -15,7 +15,8 @@ import {
 const serverBundleRelativePath = join('out', 'server.js');
 const previewPath: string = resolve( __dirname, '../preview/index.html');
 const previewHtml: string = readFileSync(previewPath).toString();
-const template = bemhtml.compile()
+const template = bemhtml.compile();
+const exampleEnableProperty = 'example.enable';
 
 let client: LanguageClient;
 const PANELS: Record<string, vscode.WebviewPanel> = {};
@@ -72,10 +73,8 @@ const initPreviewPanel = (document: vscode.TextDocument) => {
 
     PANELS[key] = panel;
 
-    const e = panel.onDidDispose(() => 
-    {
+    panel.onDidDispose(() => {   
         delete PANELS[key];
-        e.dispose()
     });
 
     return panel;
@@ -129,14 +128,30 @@ export function activate(context: vscode.ExtensionContext) {
     console.info('Congratulations, your extension is now active!');
 
     client = createLanguageClient(context);
-    // const monitoring = new SettingMonitor(client, 'example.enable').start();
-    const disposable = client.start();
+    const linterChecker = () => vscode.workspace.getConfiguration().get(exampleEnableProperty);
+
+    if (linterChecker()) {
+        client.start();
+    }
+
+    const changeConfigListener = (e: vscode.ConfigurationChangeEvent) => {
+        const linterIsEnable = e.affectsConfiguration(exampleEnableProperty) && linterChecker();
+        if (linterIsEnable) {
+            client.start();
+            console.info('Linter is Enable');
+            return;
+        }
+        client.stop();
+        console.info('Linter is Disable');
+    };
+
+    const changeConfigHandler = vscode.workspace.onDidChangeConfiguration(changeConfigListener);
     const eventChange: vscode.Disposable = vscode.workspace
         .onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => updateContent(e.document, context));
 
     const previewCommand = vscode.commands.registerCommand('example.showPreviewToSide', () => openPreview(context));
 
-    context.subscriptions.push(previewCommand, eventChange, disposable);
+    context.subscriptions.push(previewCommand, eventChange, changeConfigHandler);
 }
 
 export function deactivate() {

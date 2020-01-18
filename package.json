@@ -21,7 +21,7 @@
 			"properties": {
 				"example.enable": {
 					"type": "boolean",
-					"default": false,
+					"default": true,
 					"description": "Enable/disable example linter."
 				},
 				"example.severity.uppercaseNamesIsForbidden": {
