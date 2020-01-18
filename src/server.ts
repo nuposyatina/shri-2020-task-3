@@ -35,10 +35,9 @@ function GetSeverity(key: RuleKeys): DiagnosticSeverity | undefined {
     }
 
     const severity: Severity = conf.severity[key];
-
     switch (severity) {
         case Severity.Error:
-            return DiagnosticSeverity.Information;
+            return DiagnosticSeverity.Error;
         case Severity.Warning:
             return DiagnosticSeverity.Warning;
         case Severity.Information:
@@ -65,13 +64,15 @@ function GetMessage(key: RuleKeys): string {
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
     const source = basename(textDocument.uri);
     const json = textDocument.getText();
-
     const validateObject = (
         obj: jsonToAst.AstObject
-    ): LinterProblem<RuleKeys>[] =>
-        obj.children.some(p => p.key.value === 'block')
+    ): LinterProblem<RuleKeys>[] => {
+        const blockFields = ['content', 'mods', 'elem', 'mods'];
+        const isBlockObject = obj.children.some(p => blockFields.includes(p.key.value.toLowerCase()));
+        return !isBlockObject || obj.children.some(p => p.key.value.toLowerCase() === 'block')
             ? []
             : [{ key: RuleKeys.BlockNameIsRequired, loc: obj.loc }];
+    }
 
     const validateProperty = (
         property: jsonToAst.AstProperty
