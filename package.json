@@ -178,11 +178,8 @@
 	},
 	"dependencies": {
 		"bem-xjst": "^8.9.6",
-		"json-to-ast": "^2.1.0",
-		"request-light": "^0.2.4",
 		"vscode": "^1.1.36",
 		"vscode-languageclient": "^5.2.1",
-		"vscode-languageserver": "^5.2.1",
-		"vscode-nls": "^4.1.1"
+		"vscode-languageserver": "^5.2.1"
 	}
 }

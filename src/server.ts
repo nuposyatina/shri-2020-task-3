@@ -2,27 +2,28 @@ import {
     createConnection,
     ProposedFeatures,
     TextDocuments,
-    InitializeParams,
     TextDocument,
     Diagnostic,
     DiagnosticSeverity,
-    DidChangeConfigurationParams
+    DidChangeConfigurationParams, 
+    IConnection,
+    TextDocumentChangeEvent
 } from 'vscode-languageserver';
-
 import { basename } from 'path';
 
-import * as jsonToAst from "json-to-ast";
-
-import { ExampleConfiguration, Severity, SeverityKey } from './configuration';
-import { makeLint, LinterProblem } from './linter';
+import {
+    ExampleConfiguration,
+    Severity,
+    SeverityKey,
+    LintError
+} from './configuration';
 import * as lint from './lint.js';
-import { getServers } from 'dns';
 
-let conn = createConnection(ProposedFeatures.all);
-let docs = new TextDocuments();
+let conn: IConnection = createConnection(ProposedFeatures.all);
+let docs: TextDocuments = new TextDocuments();
 let conf: ExampleConfiguration | undefined = undefined;
 
-conn.onInitialize((params: InitializeParams) => {
+conn.onInitialize(() => {
     return {
         capabilities: {
             textDocumentSync: docs.syncKind
@@ -36,7 +37,7 @@ function getSeverityKey(code: string): SeverityKey {
 
 function getSeverity(key: SeverityKey): DiagnosticSeverity | undefined {
     if (!conf || !conf.severity) {
-        return undefined;
+        return;
     }
 
     const severity: Severity = conf.severity[key];
@@ -51,37 +52,14 @@ function getSeverity(key: SeverityKey): DiagnosticSeverity | undefined {
         case Severity.Hint:
             return DiagnosticSeverity.Hint;
         default:
-            return undefined;
+            return;
     }
 }
 
-// function GetMessage(key: RuleKeys): string {
-//     if (key === RuleKeys.BlockNameIsRequired) {
-//         return 'Field named \'block\' is required!';
-//     }
-
-//     if (key === RuleKeys.UppercaseNamesIsForbidden) {
-//         return 'Uppercase properties are forbidden!';
-//     }
-
-//     return `Unknown problem type '${key}'`;
-// }
-
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
-    const source = basename(textDocument.uri);
-    const json = textDocument.getText();
+    const source: string = basename(textDocument.uri);
+    const json: string = textDocument.getText();
     const errors = lint(json);
-
-    type LintLocationPosition = { offset: number };
-
-    type LintError = {
-        code: string,
-        location: {
-            start: LintLocationPosition,
-            end: LintLocationPosition
-        },
-        error: string
-    };
 
     // console.log('1', errors);
     const diagnostics: Diagnostic[] = errors.map((err: LintError) => {
@@ -96,77 +74,21 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
             source
         });
     });
-    console.log('2', diagnostics);
-    // const validateObject = (
-    //     obj: jsonToAst.AstObject
-    // ): LinterProblem<RuleKeys>[] => {
-    //     const blockFields = ['content', 'mods', 'elem', 'mods'];
-    //     const isBlockObject = obj.children.some(p => blockFields.includes(p.key.value.toLowerCase()));
-    //     return !isBlockObject || obj.children.some(p => p.key.value.toLowerCase() === 'block')
-    //         ? []
-    //         : [{ key: RuleKeys.BlockNameIsRequired, loc: obj.loc }];
-    // }
-
-    // const validateProperty = (
-    //     property: jsonToAst.AstProperty
-    // ): LinterProblem<RuleKeys>[] =>
-    //     /^[A-Z]+$/.test(property.key.value)
-    //         ? [
-    //               {
-    //                   key: RuleKeys.UppercaseNamesIsForbidden,
-    //                   loc: property.key.loc
-    //               }
-    //           ]
-    //         : [];
-
-    // const diagnostics: Diagnostic[] = makeLint(
-    //     json,
-    //     validateProperty,
-    //     validateObject
-    // ).reduce(
-    //     (
-    //         list: Diagnostic[],
-    //         problem: LinterProblem<RuleKeys>
-    //     ): Diagnostic[] => {
-    //         const severity = GetSeverity(problem.key);
-
-    //         if (severity) {
-    //             const message = GetMessage(problem.key);
-
-    //             let diagnostic: Diagnostic = {
-    //                 range: {
-    //                     start: textDocument.positionAt(
-    //                         problem.loc.start.offset
-    //                     ),
-    //                     end: textDocument.positionAt(problem.loc.end.offset)
-    //                 },
-    //                 severity,
-    //                 message,
-    //                 source
-    //             };
-
-    //             list.push(diagnostic);
-    //         }
-
-    //         return list;
-    //     },
-    //     []
-    // );
 
     conn.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
 
-async function validateAll() {
+async function validateAll(): Promise<void> {
     for (const document of docs.all()) {
         await validateTextDocument(document);
     }
 }
 
-docs.onDidChangeContent(change => {
+docs.onDidChangeContent((change: TextDocumentChangeEvent) => {
     validateTextDocument(change.document);
 });
 
-docs.onDidClose((e) => {
+docs.onDidClose((e: TextDocumentChangeEvent) => {
     conn.sendDiagnostics({ uri: e.document.uri, diagnostics: [] });
 });
 

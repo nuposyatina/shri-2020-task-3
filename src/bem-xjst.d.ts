@@ -1,9 +1,11 @@
 declare module 'bem-xjst' {
     export interface BemhtmlTemplate {
-        apply: (bemjson: any) => string; }
+        apply: (bemjson: any) => string;
+    }
 
     export interface BemhtmlEngine {
-        compile: () => BemhtmlTemplate; }
+        compile: () => BemhtmlTemplate;
+    }
 
     export const bemhtml: BemhtmlEngine;
 }
