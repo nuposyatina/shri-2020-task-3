@@ -129,14 +129,17 @@ export function activate(context: vscode.ExtensionContext) {
 
     client = createLanguageClient(context);
     const linterChecker = () => vscode.workspace.getConfiguration().get(exampleEnableProperty);
-
+    console.log(linterChecker())
     if (linterChecker()) {
         client.start();
     }
 
     const changeConfigListener = (e: vscode.ConfigurationChangeEvent) => {
-        const linterIsEnable = e.affectsConfiguration(exampleEnableProperty) && linterChecker();
-        if (linterIsEnable) {
+        if (!e.affectsConfiguration(exampleEnableProperty)) {
+            return;
+        }
+        console.log(e)
+        if (linterChecker()) {
             client.start();
             console.info('Linter is Enable');
             return;

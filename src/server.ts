@@ -171,11 +171,8 @@ docs.onDidClose((e) => {
 });
 
 conn.onDidChangeConfiguration(({ settings }: DidChangeConfigurationParams) => {
-    console.log('onDidChange')
     conf = settings.example;
-    if (conf && conf.enable) {
-        validateAll();
-    }
+    validateAll();
 });
 
 docs.listen(conn);

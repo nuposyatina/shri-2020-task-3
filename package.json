@@ -46,7 +46,91 @@
 						"None"
 					],
 					"default": "Warning",
-					"description": "Маркетинговые блоки должны занимать не больше половины от всех колонок блока grid"
+					"description": "Заголовок первого уровня (блок text с модификатором type h1) на странице должен быть единственным"
+				},
+				"example.severity.TEXT_INVALID_H2_POSITION": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Warning",
+					"description": "Заголовок второго уровня (блок text с модификатором type h2) не может находиться перед заголовком первого уровня на том же или более глубоком уровне вложенности"
+				},
+				"example.severity.TEXT_INVALID_H3_POSITION": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Warning",
+					"description": "Заголовок третьего уровня (блок text с модификатором type h3) не может находиться перед заголовком второго уровня на том же или более глубоком уровне вложенности"
+				},
+				"example.severity.WARNING_INVALID_BUTTON_POSITION": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Warning",
+					"description": "Блок button в блоке warning не может находиться перед блоком placeholder на том же или более глубоком уровне вложенности"
+				},
+				"example.severity.WARNING_INVALID_BUTTON_SIZE": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Warning",
+					"description": "Размер кнопки блока warning должен быть на 1 шаг больше эталонного"
+				},
+				"example.severity.WARNING_INVALID_PLACEHOLDER_SIZE": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Warning",
+					"description": "Допустимые размеры для блока placeholder в блоке warning (значение модификатора size): s, m, l"
+				},
+				"example.severity.WARNING_TEXT_SIZES_SHOULD_BE_EQUAL": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Warning",
+					"description": "Все тексты (блоки text) в блоке warning должны быть одного размера"
+				},
+				"example.severity.WARNING_HAS_NOT_TEXT_SIZE": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Warning",
+					"description": "Размер текста должен быть определен"
 				}
 			}
 		},
