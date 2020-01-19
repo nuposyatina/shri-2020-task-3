@@ -1,7 +1,12 @@
 export enum RuleKeys {
-    UppercaseNamesIsForbidden = 'uppercaseNamesIsForbidden',
-    BlockNameIsRequired = 'blockNameIsRequired',
+    tooMuchMarketingBlocks = 'GRID_TOO_MUCH_MARKETING_BLOCKS',
+    severalH1 = 'TEXT_SEVERAL_H1'
 }
+
+export interface RuleValues {
+    'GRID.TOO_MUCH_MARKETING_BLOCKS': string;
+    'TEXT.SEVERAL_H1' : string;
+};
 
 export enum Severity {
     Error = "Error", 
@@ -11,10 +16,13 @@ export enum Severity {
     None = "None"
 }
 
+
 export interface SeverityConfiguration {
-    [RuleKeys.BlockNameIsRequired]: Severity;
-    [RuleKeys.UppercaseNamesIsForbidden]: Severity;
+    [RuleKeys.severalH1]: Severity;
+    [RuleKeys.tooMuchMarketingBlocks]: Severity;
 }
+
+export type SeverityKey = keyof SeverityConfiguration;
 
 export interface ExampleConfiguration {
  

@@ -24,7 +24,7 @@
 					"default": true,
 					"description": "Enable/disable example linter."
 				},
-				"example.severity.uppercaseNamesIsForbidden": {
+				"example.severity.GRID_TOO_MUCH_MARKETING_BLOCKS": {
 					"type": "string",
 					"enum": [
 						"Error",
@@ -34,9 +34,9 @@
 						"None"
 					],
 					"default": "Warning",
-					"description": "The 'uppercaseNamesIsForbidden' rule severity."
+					"description": "Маркетинговые блоки должны занимать не больше половины от всех колонок блока grid"
 				},
-				"example.severity.blockNameIsRequired": {
+				"example.severity.TEXT_SEVERAL_H1": {
 					"type": "string",
 					"enum": [
 						"Error",
@@ -46,7 +46,7 @@
 						"None"
 					],
 					"default": "Warning",
-					"description": "The 'blockNameIsRequired' rule severity."
+					"description": "Маркетинговые блоки должны занимать не больше половины от всех колонок блока grid"
 				}
 			}
 		},
